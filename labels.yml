@@ -1,0 +1,77 @@
+# First Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp1
+  labels:
+    class: unnati
+    course: cka
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      class: unnati
+      course: cka
+  template:
+    metadata:
+      labels:
+        class: unnati
+        course: cka
+    spec:
+      containers:
+        - name: nginx_po_1
+          image: nginx
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx_svc_1
+spec:
+  type: NodePort
+  selector:
+    class: unnati
+    course: cka
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# Second Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp2
+  labels:
+    class: unnaticidco
+    course: cca
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      class: unnaticidco
+      course: cca
+  template:
+    metadata:
+      labels:
+        class: unnaticidco
+        course: cca
+    spec:
+      containers:
+        - name: nginx_po_2
+          image: nginx
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx_svc_2
+spec:
+  type: NodePort
+  selector:
+    class: unnaticidco
+    course: cca
+  ports:
+    - port: 80
+      targetPort: 80
