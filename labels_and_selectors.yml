@@ -19,7 +19,7 @@ spec:
         course: cka
     spec:
       containers:
-        - name: nginx_po_1
+        - name: nginxpo1
           image: nginx
           ports:
             - containerPort: 80
@@ -27,7 +27,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx_svc_1
+  name: nginxsvc1
 spec:
   type: NodePort
   selector:
@@ -58,7 +58,7 @@ spec:
         course: cca
     spec:
       containers:
-        - name: nginx_po_2
+        - name: nginxpo2
           image: nginx
           ports:
             - containerPort: 80
@@ -66,7 +66,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx_svc_2
+  name: nginxsvc2
 spec:
   type: NodePort
   selector:
@@ -75,3 +75,24 @@ spec:
   ports:
     - port: 80
       targetPort: 80
+
+# # ===
+# kubectl get pods --show-labels
+# # Equality-based 
+# # === AND ===
+# kubectl get pods -l class=unnati
+# kubectl get pods -l class=unnati,course=cka
+#                 OR
+# kubectl get pods -l class=unnati&&course=cka
+# # === OR ===
+# kubectl get pods -l class=unnati,class!=unnaticidco
+#                 OR
+# kubectl get pods -l class=unnati||class=unnaticidco
+# # Set-based 
+# kubectl get pods -l 'class in (unnati)'
+# # === AND ===
+# kubectl get pods -l 'class in (unnati),course in (cka)'
+#                 OR
+# kubectl get pods -l 'class,course in (unnati,cka)'
+# # === OR ===
+# kubectl get pods -l 'class in (unnati),class notin (unnaticidco)'
