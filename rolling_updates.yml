@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  annotations: 
+    kubernetes.io/change-cause: "Version-1"
+spec:
+  replicas: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 12
+      maxUnavailable: 6
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: mynginxapp
+        image: nginx
+        ports:
+        - containerPort: 80
+
+
+#  kubectl apply -f rolling_updates.yml
+#  kubectl rollout history deployment/myapp
+# kubectl set image deployment/myapp mynginxapp=tomcat --record=true (Update Image)
+#  kubectl rollout history deployment/myapp
+#  kubectl annotate deployments.apps myapp kubernetes.io/change-cause="Version-1" (Inperative Way Of Changeing Rollout History Change-Cause)
+#  kubectl rollout undo deployment/myapp (Rollback Previous Version/Revision)
+#  kubectl rollout history deployment/myapp --to-revision=5 (Rollback To Particular Version/Revision)
