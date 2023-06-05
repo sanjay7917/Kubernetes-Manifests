@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  strategy:
+    type: Recreate 
+  template: 
+    metadata: 
+      labels: 
+        app: myapp
+    spec: 
+      containers:
+        - name: myapp
+          image: mysql
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-db-secret
+                  key: db-secret-pass
+          ports:
+            - name: myapp
+              containerPort: 3306    
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: /var/lib/maria    
+            - name: dbcreation-script
+              mountPath: /docker-entrypoint-initdb.d 
+      volumes: 
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: ebs-pv-claim
+        - name: dbcreation-script
+          configMap:
+            name: dbcreation-script
+
+# kubectl exec -it myapp-78c7994f98-xw8s5 -c myapp -- /bin/bash
+# mysql -h localhost -u root -ppassword123
+# show schemas;
+# use studentapp;
+# show tables;
+# select * from users;
