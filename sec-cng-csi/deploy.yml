@@ -16,16 +16,16 @@ spec:
     spec: 
       containers:
         - name: myapp
-          image: mysql
+          image: mariadb
           env:
-            - name: MYSQL_ROOT_PASSWORD
+            - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mysql-db-secret
                   key: db-secret-pass
           ports:
             - name: myapp
-              containerPort: 3306    
+              containerPort: 3306
           volumeMounts:
             - name: persistent-storage
               mountPath: /var/lib/maria    
@@ -39,9 +39,8 @@ spec:
           configMap:
             name: dbcreation-script
 
-# kubectl exec -it myapp-78c7994f98-xw8s5 -c myapp -- /bin/bash
-# mysql -h localhost -u root -ppassword123
-# show schemas;
+# kubectl exec -it myapp-55c47fdbc4-6j8d9 -c myapp -- /bin/bash
+# mysql -u root -h localhost -pdbpassword11
+# show databases;
 # use studentapp;
 # show tables;
-# select * from users;
