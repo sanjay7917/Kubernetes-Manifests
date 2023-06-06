@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: myapp
+  # namespace: dev
 spec: 
   replicas: 1
   selector:
@@ -31,6 +32,13 @@ spec:
               mountPath: /var/lib/maria    
             - name: dbcreation-script
               mountPath: /docker-entrypoint-initdb.d 
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "500Mi"
+              cpu: "1000m"
       volumes: 
         - name: persistent-storage
           persistentVolumeClaim:
@@ -39,8 +47,11 @@ spec:
           configMap:
             name: dbcreation-script
 
-# kubectl exec -it myapp-55c47fdbc4-6j8d9 -c myapp -- /bin/bash
+# FOR TESTING
+# kubectl exec -it myapp-78566bd956-4rcz8 -c myapp -- /bin/bash 
 # mysql -u root -h localhost -pdbpassword11
 # show databases;
 # use studentapp;
 # show tables;
+# desc students;
+# select * from students;
