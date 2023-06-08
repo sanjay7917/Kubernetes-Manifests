@@ -1,0 +1,36 @@
+# kubectl create deployment mydep1 --image=nginx
+# kubectl expose deployment mydep1 --port=8080 --type=NodePort
+# vim task_16.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: task-16
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list", "delete"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["list"]
+# kubectl apply -f task_16.yml 
+# kubectl create sa mysa1
+# kubectl create clusterrolebinding mysabind --clusterrole=task-16 --serviceaccount=default:mysa1
+# kubectl create token mysa1
+---
+# kubectl create deployment mydep2 --image=nginx
+# kubectl expose deployment mydep2 --port=8080 --type=NodePort
+# vim task_17.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: task-17
+rules:
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+# kubectl apply -f task_17.yml 
+# kubectl create sa mysa2
+# kubectl create clusterrolebinding mysabind1 --clusterrole=task-17 --serviceaccount=default:mysa2
+# kubectl create token mysa2
+
+
