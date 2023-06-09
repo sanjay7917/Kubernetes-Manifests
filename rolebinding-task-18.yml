@@ -1,0 +1,111 @@
+# Tasks
+# 1. Create a namespace call cka and assigned admin access to the specific namespace via myuser2
+# kubectl create ns cka
+# kubectl create sa myuser2 -n cka
+# kubectl create deployment mydep --image=nginx -n cka
+# kubectl expose deployment mydep --port=8080 --type=NodePort -n cka
+# kubectl get pods -n cka
+# vim adminrole.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: userrole2
+  namespace: cka
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["*"]
+  verbs: ["*"]
+# kubectl create -f adminrole.yml
+# kubectl get role -n cka
+---
+# vim adminrolebind.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: userrolebind2
+  namespace: cka
+subjects:
+- kind: ServiceAccount
+  name: myuser2
+  namespace: cka
+roleRef:
+  kind: Role
+  name: userrole2
+  apiGroup: ""
+# kubectl create -f adminrolebind.yml
+# kubectl get rolebinding -n cka
+# kubectl create token myuser2 -n cka
+---
+# 2. Create myuser3 and add view access to cka namespace 
+# kubectl create ns cka
+# kubectl create sa myuser3 -n cka
+# kubectl create deployment mydep1 --image=nginx -n cka
+# kubectl expose deployment mydep1 --port=8080 --type=NodePort -n cka
+# kubectl get pods -n cka
+# vim viewrole.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: userrole3
+  namespace: cka
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["*"]
+  verbs: ["get", "list", "watch"]
+# kubectl create -f viewrole.yml
+# kubectl get role -n cka
+---
+# vim viewrolebind.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: userrolebind3
+  namespace: cka
+subjects:
+- kind: ServiceAccount
+  name: myuser3
+  namespace: cka
+roleRef:
+  kind: Role
+  name: userrole3
+  apiGroup: ""
+# kubectl create -f viewrolebind.yml 
+# kubectl get rolebinding -n cka
+# kubectl create token myuser3 -n cka
+---
+# 3. Create a myuser4 and assign edit access to entire cluster level
+# kubectl create ns cka
+# kubectl create sa myuser4 -n cka
+# kubectl create deployment mydep2 --image=nginx -n cka
+# kubectl expose deployment mydep2 --port=8080 --type=NodePort -n cka
+# kubectl get pods -n cka
+# vim editrole.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: userrole4
+  namespace: cka
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["*"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# kubectl create -f editrole.yml
+# kubectl get role -n cka
+---
+# vim editrolebind.yml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: userrolebind4
+  namespace: cka
+subjects:
+- kind: ServiceAccount
+  name: myuser4
+  namespace: cka
+roleRef:
+  kind: Role
+  name: userrole4
+  apiGroup: ""
+# kubectl create -f editrolebind.yml 
+# kubectl get rolebinding -n cka
+# kubectl create token myuser4 -n cka
