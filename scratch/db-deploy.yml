@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  # namespace: dev
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  strategy:
+    type: Recreate 
+  template: 
+    metadata: 
+      labels: 
+        app: myapp
+    spec: 
+      containers:
+      - name: myapp
+        image: mariadb
+        env:
+          - name: MARIADB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-db-secret
+                key: db-secret-pass
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+          # - name: persistent-storage
+          #   mountPath: /var/lib/maria
+          # - name: dbcreation-script
+          #   mountPath: /docker-entrypoint-initdb.d 
+          - name: dbcreation-script
+            mountPath: /scripts
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "500m"
+          limits:
+            memory: "500Mi"
+            cpu: "1000m"
+      volumes: 
+        # - name: persistent-storage
+        #   persistentVolumeClaim:
+        #     claimName: ebs-pv-claim
+        - name: dbcreation-script
+          configMap:
+            name: dbcreation-script
+
+# FOR TESTING
+# kubectl exec -it <POD-NAME> -c <CONTAINER-NAME> -- /bin/bash 
+# mariadb -u root -h localhost -pdbpassword11
+# kubectl exec -it myapp-65588795f7-wd45s -c myapp -- /bin/bash 
+# mariadb -u dbadmin -h studentdb.cmomitk2ez52.us-east-2.rds.amazonaws.com -p$MARIADB_ROOT_PASSWORD < /scripts/student.sql
+# show databases;
+# use studentapp;
+# show tables;
+# desc students;
+# select * from students;
