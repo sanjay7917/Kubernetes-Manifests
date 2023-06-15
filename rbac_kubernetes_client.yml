@@ -5,10 +5,11 @@
 # cd dev/
 # sudo openssl genrsa -out devuser.key 2048
 # sudo openssl req -new -key devuser.key -out devuser.csr
-# sudo openssl x509 -req -in devuser.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out devuser.crt -days 500
 #   Organization Name → namespace —> dev
 #   Common Name → devuser
+# sudo openssl x509 -req -in devuser.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out devuser.crt -days 500
 # vim role.yml
+
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -22,6 +23,7 @@ rules:
 # kubectl create -f role.yaml
 ---
 # vim rolebinding.yml
+
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -37,21 +39,23 @@ roleRef:
   apiGroup: ""
 
 # kubectl create -f rolebinding.yaml
-# kubectl config set-credentials devuser --client-certificate=/home/ubuntu/devuser.crt --client-key=/home/ubuntu/devuser.key # Set credentials 
-# kubectl config set-context  devuser-context --cluster=kubernetes --namespace=dev --user=devuser # Set context to dev Namespace
+# kubectl config set-credentials devuser --client-certificate=/home/ubuntu/dev/devuser.crt --client-key=/home/ubuntu/dev/devuser.key # Set credentials 
+# kubectl config set-context devuser-context --cluster=kubernetes --namespace=dev --user=devuser # Set context to dev Namespace
+# cp ~/.kube/config .
+# vim config
+# DELETE KUBERNETES ADMIN USER, CONTEXT DETAILS AND CERTS FORM COPIED config FILE
+# CHANGE CURRENT-CONTEXT TO devuser-context FROM kubernetes-admin@kubernetes
+#   current-context: devuser-context
 # kubectl config get-contexts
 # kubectl config use-context devuser-context (optional) #To change the context
 # scp -i key.pem .kube/config ubuntu@<Public IP>:/home/ubuntu/dev
-# scp -i key.pem /home/ubuntu/devuser.key ubuntu@<Public IP>:/home/ubuntu/dev
-# scp -i key.pem /home/ubuntu/devuser.crt ubuntu@<Public IP>:/home/ubuntu/dev
+# scp -i key.pem /home/ubuntu/dev/devuser.key ubuntu@<Public IP>:/home/ubuntu/dev
+# scp -i key.pem /home/ubuntu/dev/devuser.crt ubuntu@<Public IP>:/home/ubuntu/dev
 # IF SCP COMMAND DOESN'T WORK COPY FILES FROM MASTER TO KUBERNETES CLIENT CAN DO MANUALLY
 # === Take SSH of Kubernetes Client ===
 # mkdir dev
 # cd dev/
-# vim config
-# CHANGE CURRENT-CONTEXT TO devuser-context FROM kubernetes-admin-context BEFORE users: - name: devuser
-#   current-context: devuser-context
-# kubectl get nodes --kubeconfig=/home/ubuntu/dev/config # It will display nodes if it will have permissions
+# kubectl get nodes --kubeconfig=/home/ubuntu/dev/config # It will display nodes if User will have permissions
 # kubectl get pods --kubeconfig=/home/ubuntu/dev/config
 # kubectl create deployment mydep --image=docker.io/httpd --kubeconfig=/home/ubuntu/dev/config
 # kubectl get pods --kubeconfig=/home/ubuntu/dev/config
