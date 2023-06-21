@@ -1,0 +1,34 @@
+kubectl create ns frontend
+kubectl create deployment wp --image=docker.io/wordpress --dry-run=client -o yaml > mywp.yml
+vim mywp.yml 
+  env:  
+  - name: WORDPRESS_DB_HOST
+    value: mysqlsvc
+  - name: WORDPRESS_DB_NAME
+    value: cka
+  - name: WORDPRESS_DB_USER
+    value: root
+  - name: WORDPRESS_DB_PASSWORD
+    value: pass123
+kubectl apply -f mywp.yml -n frontend
+kubectl get pods -n frontend
+kubectl get pods -n frontend -w
+kubectl expose deployment wp --port=80 --type=NodePort -n frontend
+kubectl get svc -n frontend
+kubectl create ns backend
+kubectl create deployment mydb --image=docker.io/mysql:5.6 --dry-run=client -o yaml > mydb.yml
+vim mydb.yml 
+  env:  
+  - name: MYSQL_ROOT_PASSWORD
+    value: pass123
+  - name: MYSQL_DATABASE
+    value: cka
+kubectl apply -f mydb.yml -n backend
+kubectl expose deployment mydb --port=3306 -n backend --name=mysqlsvc
+kubectl delete svc mydb -n backend
+kubectl run -i --tty --rm test --image=busybox /bin/sh
+nslookup svcname.namespacename.svc.cluster.local
+kubectl edit deployment wp -n frontend
+  env:  
+  - name: WORDPRESS_DB_HOST
+    value: mysqlsvc.backend.svc.cluster.local

@@ -1,0 +1,14 @@
+sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml 
+
+CHANGE PORT NUMBER FROM 6443 TO ANY PORT NUMBER ON LINE 36
+    36     - --secure-port=6443 -->  36     - --secure-port=6444
+
+CHECK IF APISERVER IS RUNNING OR NOT
+sudo ctr -n k8s.io container ls | grep apiserver
+
+CHANGE PORT FROM ~/.kube/config ALSO
+sudo vim ~/.kube/config 
+    5     server: https://172.31.15.176:6444
+
+CHECK APISERVER POD
+kubectl get pod -n kube-system
