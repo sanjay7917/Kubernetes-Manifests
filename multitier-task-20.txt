@@ -1,0 +1,53 @@
+1. Setup Frontend
+kubectl create ns frontend
+kubectl create deployment gogs --image=docker.io/gogs/gogs --port=3000 --dry-run=client -o yaml > mygogs.yml
+vim mygogs.yml 
+env:
+- name: DB_TYPE
+  value: postgres
+- name: DB_HOST
+  value: hostname
+- name: DB_NAME
+  value: gogs
+- name: DB_USER
+  value: gogsuser
+- name: DB_PASSWD
+  value: gogspassword
+- name: DB_SSL_MODE
+  value: disable
+  
+kubectl apply -f mygogs.yml -n frontend
+kubectl get pods -n frontend
+kubectl expose deployment gogs --type=NodePort --port=3000 --target-port=3000 -n frontend
+kubectl get svc -n frontend
+
+2. Setup Backend
+kubectl create ns backend
+kubectl create deployment mydb --image=docker.io/postgres --dry-run=client -o yaml > mydb.yml
+vim mydb.yml 
+env:  
+- name: POSTGRES_USER
+  value: gogsuser
+- name: POSTGRES_PASSWORD
+  value: gogspassword
+- name: POSTGRES_DB
+  value: gogs
+
+kubectl apply -f mydb.yml -n backend
+kubectl expose deployment mydb --port=5432 --target-port=5432 -n backend --name=pgsqlsvc
+kubectl run -i --tty --rm test --image=busybox /bin/sh
+  nslookup svcname.namespacename.svc.cluster.local
+  Example: nslookup postgresql-service.postgres-namespace.svc.cluster.local
+kubectl edit deployment gogs -n frontend
+  env:  
+  - name: DB_HOST
+    value: postgresql-service.postgres-namespace.svc.cluster.local
+
+3. Open Browser HIT IP:NodePort
+GOGS Setup
+DATABASE CONFIGURATION
+HOST: postgresql-service.postgres-namespace.svc.cluster.local
+USER: gogsuser
+PASSWORD: gogspassword
+DATABASE NAME: gogs
+CREATE
