@@ -1,0 +1,71 @@
+# vim configmap.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myconfig
+data:
+  Avatar: Killu
+  Game: Valorant
+  Rank: Immortal
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <body>
+    <h1> Player Profile </h1>
+    <a href = "Avatar"> Avatar </a><br>
+    <a href = "Game"> Game </a><br>
+    <a href = "Rank"> Rank </a><br>
+    </body>
+    </html>
+# kubectl apply -f configmap.yml
+---
+# vim deploy.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: httpd
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - name: keyconfig
+            mountPath: /usr/local/apache2/htdocs/
+      volumes: 
+        - name: keyconfig
+          configMap:
+            name: myconfig
+# kubectl apply -f deploy.yml
+---
+# vim confsvc.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  type: NodePort
+  selector:
+    app: myapp
+  ports:
+  - port: 80
+    targetPort: 80
+# kubectl apply -f confsvc.yml
+# kubectl get configmaps
+# kubectl get deployment
+# kubectl get pod
+# kubectl get svc
+# kubectl edit configmaps <CONFIGMAP-NAME> 
+# kubectl rollout restart deployment <DEPLOYMENT-NAME>
+# (HIT IP ON BROWSER)
+
+
