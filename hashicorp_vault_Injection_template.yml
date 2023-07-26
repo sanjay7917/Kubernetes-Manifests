@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "my-app-role" # Vault role used to fetch secrets
+    spec:
+      containers:
+      - name: my-app-container
+        image: my-app-image:latest
+        envFrom:
+        - secretRef:
+            name: my-vault-secrets # Kubernetes secret with injected Vault secrets

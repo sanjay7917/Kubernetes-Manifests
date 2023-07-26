@@ -28,7 +28,7 @@ spec:
 
 #  kubectl apply -f rolling_updates.yml
 #  kubectl rollout history deployment/myapp
-# kubectl set image deployment/myapp mynginxapp=tomcat --record=true (Update Image)
+#  kubectl set image deployment/myapp mynginxapp=tomcat --record=true (Update Image)
 #  kubectl rollout history deployment/myapp
 #  kubectl annotate deployments.apps myapp kubernetes.io/change-cause="Version-1" (Inperative Way Of Changeing Rollout History Change-Cause)
 #  kubectl rollout undo deployment/myapp (Rollback Previous Version/Revision)
